@@ -12,4 +12,11 @@ test.group('Criar favorito', () => {
   resposta.assertStatus(201)
   resposta.assertBodyContains({nome:"IFRN"}) 
   })
+  test ('criar favorito com campo faltante', async ({ client }) =>{
+    const resposta=await client.post ('/favorito').json(
+      {nome:'IFRN' })
+
+  resposta.assertStatus(400)
+
+  })
 })

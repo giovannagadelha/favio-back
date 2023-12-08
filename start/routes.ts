@@ -19,6 +19,7 @@
 */
 
 import Route from '@ioc:Adonis/Core/Route'
+import FavoritosController from 'App/Controllers/Http/FavoritosController'
 const favoritos=[{id:1, nome: 'Google', url: "http://www.google.com", importante:true}]
 
 Route.get('/', async () => {
@@ -40,9 +41,21 @@ Route.get('/favoritos/:nome', async ({params}) => {
   return {id:1, nome:params.nome, url: "http://www.google.com", importante:true }
 })
 
-Route.post('/favorito', async ({request})=> {
+Route.post('/favorito', async ({request,response})=> {
   const {nome,url,importante}=request.body()
   const newFavorito={id:favoritos.length+1,nome,url,importante}
   favoritos.push(newFavorito)
   return response.status(201).send(newFavorito)
 })
+
+Route.put('/favoritos/:id', async ({params,request,response})=>{
+const {nome,url,importante}=request.body()
+let favoritoEncontrado=favoritos.find((favoritos)=>favoritos.id==params.id)
+if favoritoEncontrado==undefined
+return response.status(404)
+
+return favoritoEncontrado
+
+})
+
+Route.resource('favoritao', 'FavoritosController').apiOnly()
