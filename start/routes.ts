@@ -48,14 +48,40 @@ Route.post('/favorito', async ({request,response})=> {
   return response.status(201).send(newFavorito)
 })
 
-Route.put('/favoritos/:id', async ({params,request,response})=>{
-const {nome,url,importante}=request.body()
-let favoritoEncontrado=favoritos.find((favoritos)=>favoritos.id==params.id)
-if favoritoEncontrado==undefined
-return response.status(404)
+Route.put('/favoritos/:id', async ({ params, request, response }) => {
+  const { nome, url, importante } = request.body()
 
-return favoritoEncontrado
+  const found = favoritos.find((favorito) => favorito.id == params.id)
+  if (found == undefined) {
+    response.status(404)
+  } else {
+    const encontrar = favoritos.find((favorito) => favorito.nome == nome && favorito.url == url)
+    if (encontrar == undefined) {
+      if (nome !== undefined) {
+        favoritos[found.id - 1].nome = nome
+      }
+      if (url !== undefined) {
+        favoritos[found.id - 1].url = url
+      }
+      if (importante !== undefined) {
+        favoritos[found.id - 1].importante = importante
+      }
+      response.status(201).send(favoritos[found.id - 1])
+    } else {
+      response.status(404)
+    }
+  }
+})
 
+Route.delete('/favoritos/:id', async ({ params, response }) => {
+  const found = favoritos.findIndex((favorito) => favorito.id == params.id)
+
+  if (found !== -1) {
+    favoritos.splice(found, 1)
+    response.status(204)
+  } else {
+    response.status(404)
+  }
 })
 
 Route.resource('favoritao', 'FavoritosController').apiOnly()
